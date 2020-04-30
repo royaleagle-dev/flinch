@@ -1,0 +1,73 @@
+{%extends "chat/base.html"%}
+
+{%block messages%}
+{% if messages %}
+    {% for message in messages %}
+    	<div class = "panel message">
+    		<p {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+    	</div>
+    {% endfor %}
+{%endif%}
+{%endblock%}
+
+{%block content%}
+<div class = "row toMiddle">
+	<div class = "col">
+		<h3 class = "text-center heading">Register</h3>
+	</div>
+</div>
+
+<div class = "row">
+	<div class = "col-md-8 offset-md-2">
+		<form method = "post" style = "display:none">
+			{%csrf_token%}
+
+			<div class = "form-row">
+				<div class = "col-md-6">
+					<input type = "text" class = "userform" placeholder = "Firstname" name = "firstname" required = "">
+					<input type = "text" class = "userform" placeholder = "Lastname" name = "lastname" required = "">
+					<input type = "text" class = "userform" placeholder = "Phone Number" name = "phone" required = "">
+					<input type = "email" class = "userform" placeholder = "Email" name = 'email' required = "">
+				</div>
+				<div class = "col-md-6">
+					<input type = "text" class = "userform" placeholder = "Username" name = 'username' required = "">
+					<input type = "password" class = "userform" placeholder = "Password" name = 'password' required = "">
+					<input type = "password" class = "userform" placeholder = "Confirm Password" name = 'password' required = "">
+					<input type = "password" class = "userform" placeholder = "Recovery Code" name = "recovery">
+				</div>
+			</div>
+
+			<div class = "row">
+				<div class = "col-md-4" align = "center">
+					
+				</div>
+				<div class = "col-md-4">
+					<br>
+					<button type = "submit" class = "btn btn-danger btn-block btn-lg">Signup</button>
+				</div>
+				<div class = "col-md-4" align = "center">
+					
+				</div>
+			</div>
+			<br>
+		</form>
+
+
+		<div class = "text-muted">
+			<p>By clicking on the 'Register' button, you've agreed to the terms and conditions of using this website</p>
+		</div>
+	</div>
+</div>
+<div style = "margin-top:45px;">
+</div>
+<br>
+<br>
+{%endblock%}
+
+{%block otherJs%}
+<script>
+    $(document).ready(function(){
+        $('form').slideDown(3000);
+    })
+</script>
+{%endblock%}

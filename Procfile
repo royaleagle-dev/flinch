@@ -1,0 +1,1 @@
+web: gunicorn flinch.wsgi --log-file -

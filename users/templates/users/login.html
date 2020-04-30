@@ -1,0 +1,51 @@
+{%extends "chat/base.html"%}
+
+{%block messages%}
+{% if messages %}
+    {% for message in messages %}
+    	<div class = "panel message">
+    		<p {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+    	</div>
+    {% endfor %}
+{%endif%}
+{%endblock%}
+
+{%block content%}
+<div class = "row">
+	<div class = "col" style = "margin-top:200px;">
+		<h3 class = "heading text-center">Login</h3>
+	</div>
+</div>
+
+<div class = "row">
+	<div class = "col-md-8 offset-md-2">
+		<form method = "post">
+			{%csrf_token%}
+			<input type = "email" class = "userform" placeholder = "Email" name = 'email' required = "">
+			<input type = "password" class = "userform" placeholder = "Password" name = 'password' required = "">
+
+			<div class = "row">
+				<div class = "col-md-4" align = "center">
+					<br>
+					<br>
+					<a href = "">Forget Password / <br>Couldn't login</a>
+				</div>
+				<div class = "col-md-4">
+					<br>
+					<br>
+					<button type = "submit" class = "btn btn-danger btn-block btn-lg">Login</button>
+				</div>
+				<div class = "col-md-4" align = "center">
+					<br>
+					<br>
+					Need an Account?<br> <a href = "{%url 'users:userSignup'%}">Register</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class = "topSpace">
+</div>
+<br>
+<br>
+{%endblock%}
