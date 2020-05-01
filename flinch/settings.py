@@ -25,7 +25,7 @@ SECRET_KEY = '$g-m3c=7n$k+8!r#ugzv0l@t94^p!54zu*y9vh*t5h&z&2uv02'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '192.168.43.91']
+ALLOWED_HOSTS = ['localhost', '192.168.43.91', 'rflinch.herokuapp.com']
 
 
 # Application definition
