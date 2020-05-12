@@ -1,55 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import User
-import datetime
+from django.utils import timezone
 
-# Create your models here.
-
-class Msg(models.Model):
-    sender = models.EmailField()
-    message = models.CharField(max_length = 50000)
-    receiver = models.EmailField()
-    state = (
-    ('r', 'read'),
-    ('u', 'unread'),
-    )
-    status = models.CharField(max_length = 1, choices = state, default = 'u')
-    timestamp = models.DateTimeField()
+class Contact(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    contact = models.EmailField(max_length = 255)
+    
+    def __str__(self):
+        return self.user.username
+    
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    contact = models.EmailField(max_length = 255)
+    body = models.CharField(max_length = 2000, default = '')
+    timestamp = models.DateTimeField(auto_now_add = True)
+    
+    def __str__(self):
+        return self.body
+    
+class Chat(models.Model):
+    sender = models.EmailField(max_length = 255)
+    receiver = models.EmailField(max_length = 255)
+    key = models.CharField(max_length = 255)
+    message = models.TextField(max_length = 5000)
+    timestamp = models.DateTimeField(auto_now_add = True)\
     
     def __str__(self):
         return self.sender
-
-class Friend(models.Model):
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
-    friend = models.CharField(max_length = 2000)
-    timestamp = models.DateField(default = str(datetime.datetime.now().date()))
-    state =(
-    ('p', 'pending'),
-    ('a', 'accepted'),
-    ('d', 'declined'),
-    )
-    status = models.CharField(max_length = 1, choices = state, default = 'p')
-    modes = (
-    ('r', 'received'),
-    ('s', 'sent'),
-    )
-    mode = models.CharField(max_length = 1, choices = modes, default = 's')
-    
-    def __str__(self):
-        return self.friend
-    
-class Chat(models.Model):
-    sender = models.CharField(max_length = 255)
-    receiver = models.CharField(max_length = 255)
-    chat = models.TextField(max_length = 100000)
-    timestamp = models.DateTimeField()
-    modes = (
-    ('s','send'),
-    ('r', 'receive'))
-    mode = models.CharField(max_length = 1, default = 's', choices = modes)
-    key = models.CharField(max_length = 255)
-    
-    def __str__(self):
-        return self.chat
-    
-
-

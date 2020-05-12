@@ -1,64 +1,23 @@
-.bg{
-   background: -webkit-linear-gradient(left, rgba(200, 4, 3, 0.8), rgba(2, 0, 120, 0.8));
-    min-height: 700px;
-    background-attachment:fixed;
+/*-----Preloader-------*/
+body.preloader-site{
+    overflow:hidden;
 }
 
-h1,h2,h3,h4,h5,h6,p{
-    color:white;
-    opacity:0.9;
-}
-
-input[type]{
-    background:rgb(200, 60, 20);
-    opacity:0.6;
-    color:white;
-    border:0;
+.preloader-wrapper{
+    height:100%;
     width:100%;
-    padding:8px;
-    margin:4px;
-    outline:none;
-    line-height:2.5em;
-    
+    background:#FFF;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:9999999;
 }
 
-.toMiddle{
-    margin-top:80px;
-}
-
-.heading{
-    font-family:fantasy;
-    font-size:3em;
-    font-size-adjust: auto;
-}
-
-.scrollable{
-    height:600px;
-    overflow-y:auto;
-    overflow-x:none;
-}
-
-#flinch{
-    font-family:monospace;
-    text-align:center;
-    margin-top:20px;
-}
-
-.recent{
-    background-color:darkblue;
-    opacity:0.7;
-    padding:10px;    
-}
-
-.senderStyle, .receiverStyle{
-    padding:16px;
-    width:auto
-}
-
-.senderStyle{
-    background-color:maroon;
-}
-
-.receiverStyle{
-    background-color:black;
+.preloader-wrapper .preloader{
+    position:absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    width:120px;
 }

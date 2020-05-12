@@ -6,6 +6,9 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 
 # Create your views here.
+def userReg(request):
+    return render(request, "users/registration.html")
+
 def userLogout(request):
 	logout(request)
 	messages.success(request, "You've successfully logged Out. Thanks for visiting our website today")
@@ -24,7 +27,7 @@ def userLogin(request):
 			Username = currentUser.username
 		else:
 			messages.warning(request, 'Email does not exist')
-			return redirect('users:userLogin')
+			return redirect('users:userReg')
 		
 		user = authenticate(username = Username, password = password)
 		if user is not None:
@@ -33,9 +36,9 @@ def userLogin(request):
 			return redirect('chat:chatIndex')
 		else:
 			messages.warning(request, "Couldn't login user")
-			return redirect('users:userLogin')
+			return redirect('users:userReg')
 	else:
-		return render(request, 'users/login.html')
+		return redirect('users:userReg')
 
 def userSignup(request):
     if request.method == 'POST':

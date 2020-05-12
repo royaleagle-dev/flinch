@@ -3,59 +3,141 @@
 {%load static%}
 
 {%block content%}
-<div class = "row" style = "margin-bottom:50px;">
-    <div class = "col-md-4 mb-2">
-        <div id = "recent">
-        
-        <div class = "note" style = "margin-bottom:25px;">
-            <button type = "button" class = "btn btn-info">Recents<span id = "msgcount"></span></button>
-        </div>
-        
-        {%for items in allMsg%}
-        <div class = "panel recent" style = "">
-            <h5 style = "color:white">{{items.sender}}</h5>
-            <small class = "text-warning">{{items.timestamp}}</small>
-            <hr style = "margin:5px;" class = "w3-yellow;">
-            <p>{{items.chat | slice:50}}..........</p>
-        </div>
-        <br>
-        {%endfor%}
-        </div>
-        
-    </div>
-     <div class = "col-md-3" align = "center">
-         <div id = "chat">
-        <h3>Chats</h3>
-        <hr>
-        {%for item in acceptedFriend%}
-        <div class = "" style = "bottom-margin:3px;">
-            <a href = "{%url 'chat:chatRoom' item.user.username%}" class = "btn btn-warning btn-block" style = "padding:3px;">
-                {{item.user.first_name}} {{item.user.last_name}} 
-            </a>
-        </div>
-        <br>
-        {%endfor%}
-    </div>
+<div class = "row">
+    <div class = "col-md-3 col-sm-2 mt-5">
+        <ul class = "nav nav-tabs flex-column">
+            <li class = "nav-item">
+                <a class = "nav-link active bg-primary text-light" onclick = "openTab('contactsTab')">Contacts</a>
+            </li>
+                
+            <li class = "nav-item">
+                <a class = "nav-link" id = "chats">Chats</a>
+            </li>
+                
+            <li class = "nav-item">
+                <a class = "nav-link" id = "notifications">Notifications <span class = "badge badge-danger">{{notificationCount}}</span></a>
+            </li>
+                
+            <li class = "nav-item">
+                <a class = "nav-link" id = "settings">Settings</a>
+            </li>
+        </ul>
     </div>
     
-    <div class = "col-md-3" style = "" align = "center">
-        <div id = "requests">
-        <h3>Friend Requests</h3>
-        <hr>
-        {%for item in friends%}
-        <div class = "" style = "bottom-margin:3px;">
-            <button class = "btn btn-info btn-block" style = "padding:3px;">{{item.user.username}}</button>
-            <a href = "{%url 'chat:acceptFriend' item.user.username %}">Accept</a>....||....<a href = "{%url 'chat:declineFriend' item.id%}">Decline</a>
+    <div class = "col-md-7 mt-5">
+        <div class = "mainTab" id = "contactsTab">
+            <button class = "btn btn-info mr-auto animated headShake" type = "button" data-toggle = "modal" data-target = "#addContact"><span class = "fas fa-plus"></span>Add</button>
+            {%if contacts%}
+            {%for item in contacts%}
+                <div class = "contactList w3-panel w3-card-4 w3-padding-16">
+                    <h6 style = "display:inline">{{item.user.first_name}} {{item.user.last_name}}</h6>
+                    <button class = "btn btn-outline-info w3-round-xlarge w3-right btn-sm startChat" id = "startChat{{item.user.username}}" onclick = "startChat('startChat{{item.user.username}}')">Start Chat</button>
+                    <a href = "{%url 'chat:deleteContact' item.user.username%}" class = " btn btn-secondary"> <span class = "fas fa-trash"></span></a>
+                    
+                    <hr style = "margin-bottom:2px;">
+                    <small class = "text-muted">Location: {{item.user.profile.location}}</small>
+                    <hr style = "margin-top:2px;margin-bottom:2px;">
+                    <small class = "text-muted">Phone: {{item.user.profile.phone}}</small>
+                    <hr style = "margin-top:2px;margin-bottom:2px;">
+                </div>
+            {%endfor%}
+            {%else%}
+                <div class = "mt-5 text-center">
+                    <p>Your Contact List is Empty, Please add Contacts</p>
+                    <button class = "btn btn-info mr-auto animated headShake" type = "button" data-toggle = "modal" data-target = "#addContact"><span class = "fas fa-plus"></span>Add</button>
+                </div>
+            {%endif%}
+            
+            <!--Add contact modal div-->
+            <div id = "addContact" class = "modal animated fadeInUp">
+                <div class = "modal-dialog modal-dialog-centered">
+                    <div class = "modal-content">
+                        <div class = "modal-header">
+                            <h3 class = "modal-title">Add Contact</h3>
+                            <button type = "button" class = "close" data-dismiss = "modal">&times;</button>
+                        </div>
+                        <div class = "modal-body">
+                            <form action = "{%url 'chat:addContact'%}" method = "GET">
+                                <input type = "email" class = "form-control" placeholder = "email" name = 'addContactByEmail'>
+                                <br>
+                                <input type = "submit" class = "btn btn-info w3-right" value = "Add Contact">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br>
-        {%endfor%}
+        
+        <div class = "mainTab" id = "chatsTab" style = "display:none">
+            <div align = "">
+                <select id = "usertoChatWith" class = "bg-dark" style = "display:inline">
+                    <option value = "" selected >--Chat With--</option>
+                    {%for item in contacts%}
+                        <option value = "{{item.user.username}}">{{item.user.first_name}} {{item.user.last_name}}</option>
+                    {%endfor%}
+                </select>
+                <button type = "button" id = "confirmUser" class = "btn btn-info btn-sm">Chat</button>
+                <h6 class = "activeChat" style = "display:inline;float:right"></h6>
+            </div>
+            <hr>
+            <div id = "mainChatArea">
+                <div id = "currentChat" style = "overflow-y:auto;height:500px;">
+                </div>
+                
+                <div style = "margin-bottom:30px;">
+                </div>
+                <div class = "fixed-bottom w3-padding-16 w3-panel">
+                    
+                        {%csrf_token%}
+                        <input type = "hidden" value = "{{request.user.username}}" id = "chatUsername">
+                        <label class = "sr-only">Message</label>
+                        <div class = "input-group">
+                            <input type = "text" name = "message" class = "form-control" id = "message">
+                        <div class = "input-group-append">
+                            <div class = "">
+                                <span class = "fas fa-paper-plane fa-2x" id = "sendMsg"></span>
+                            </div>
+                        </div>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class = "mainTab" id = "notificationsTab" style = "display:none">
+            {%if notifications%}
+            {%for item in notifications%}
+                <div class = "w3-panel w3-card-4 w3-padding-16">
+                    <small style = "display:inline" class = "text-muted">From: App</small>
+                    <small style = "display:inline;float:right;" class = "text-muted">{{item.timestamp}}</small>
+                    <hr>
+                    <p>{{item.body}}</p>
+                    <hr>
+                </div>
+            {%endfor%}
+            {%else%}
+                <div class = "mt-5 text-center">
+                    <p>You do not have any notifications yet</p>
+                </div>
+            {%endif%}
+        </div>
+        
+        <div class = "mainTab" id = "settingsTab" style = "display:none">
+            <div class = "personal-settings w3-panel bg-info w3-padding text-white">
+                <h5>Personal Settings</h5>
+            </div>
+            
+            <div class = "personal-settings w3-panel bg-info w3-padding text-white">
+                <h5>Application Settings</h5>
+            </div>
+            
+            <div class = "personal-settings w3-panel bg-info w3-padding text-white">
+                <h5>Accessibility Settings</h5>
+            </div>
         </div>
     </div>
 </div>
 {%endblock%}
+
 {%block otherJs%}
-<script src = "{%static 'js/main.js'%}">
-</script>
-<script src = "{%static 'js/loader.js'%}">
-</script>
+<script src = "{%static 'js/chatIndex.js'%}"></script>
 {%endblock%}

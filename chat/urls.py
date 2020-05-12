@@ -4,11 +4,9 @@ from . import views
 app_name = 'chat'
 
 urlpatterns = [
-    path('', views.ChatIndex, name = 'chatIndex'),
-    path('addFriend/', views.addFriend, name = 'addFriend'),
-    #path('sendMsg/', views.sendMsg, name = 'sendMsg'),
-    path('chatRoom/<str:username>', views.chatRoom, name = 'chatRoom'),
-    path('test/', views.test, name = 'test'),
-    path('acceptFriend/<str:friend>/', views.acceptFriend, name = 'acceptFriend'),
-    path('declineFriend/<int:id>/', views.declineFriend, name = 'declineFriend'),
+    path('', views.chatIndex, name = 'chatIndex'),
+    path('addContact/', views.addContact, name = 'addContact'),
+    path('startChat/', views.startChat, name = 'startChat'),
+    path('chatRoom/<str:receiver>/', views.chatRoom, name = 'chatRoom'),
+    path('delContact/<str:username>/', views.deleteContact, name = 'deleteContact'),
 ]

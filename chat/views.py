@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView
-from chat.models import Msg, Friend, Chat
+from django.views.generic import ListView, DetailView
+from chat.models import Chat, Contact, Notification
 from django.contrib.auth.models import User
 import datetime
 import re
@@ -11,95 +11,83 @@ from django.utils import timezone
 from hashlib import md5
 # Create your views here.
 
-def test(request):
-    return render(request, 'chat/test.html')
+def deleteContact(request, username):
+    idList = [ ]
+    myContact = Contact.objects.filter(user__username__exact = request.user.username).filter(contact__exact = username)
+    friendContact = Contact.objects.filter(user__username__exact = username).filter(contact__exact = request.user.username)
+    for items in myContact:
+        idList.append(items.id)
+    for items in friendContact:
+        idList.append(items.id)
+    print(idList)
+    for items in idList:
+        x = get_object_or_404(Contact, id = items)
+        x.delete()
+    messages.success(request, "contact successfully deleted")
+    return redirect('chat:chatIndex')
 
-def ChatIndex(request):
-    username = request.user.username
+def chatRoom(request, receiver):
+    chats = Chat.objects.filter(key__contains = request.user.username).filter(key__contains = receiver).order_by('-id')
+    return render(request, 'chat/chatRoom.html', {'chats':chats})
+
+def chatIndex(request):
     
-    allMsg = Chat.objects.filter(key__contains = request.user.username).order_by('-id')[:5]
+    contacts = Contact.objects.filter(contact__exact = request.user.username)
+    notificationCount = Notification.objects.filter(contact__exact = request.user.username).count()
+    notifications = Notification.objects.filter(user__username__exact = request.user.username).order_by('-id')
     
-    friends = Friend.objects.filter(mode__exact = 's').filter(friend__exact = request.user.username).filter(status__exact = 'p')
-    
-    acceptedFriend = Friend.objects.filter(friend__exact = request.user.username).filter(status__exact = 'a')
     ctx = {
-        'allMsg':allMsg,
-        'friends':friends,
-        'acceptedFriend':acceptedFriend,
+        #'chats':chats,
+        'contacts':contacts,
+        'notificationCount':notificationCount,
+        'notifications':notifications,
     }
     return render(request, 'chat/chatIndex.html', ctx)
 
-def addFriend(request):
-    search = request.GET.get('search')
-    pattern = re.compile (r'^(\D{11})(\D{1})')
-    x = re.sub(pattern, '', search)
-    opp = User.objects.get(email = x)
+def addContact(request):
+    contact = request.GET.get('addContactByEmail')
+    
+    #Verify contact is in Data base
     users = User.objects.all()
-    USERS = set()
-    for item in users:
-        USERS.add(item.username)
-        messages.success(request, USERS)
+    status = 'absent'
+    for user in users:
+        if user.username == contact:
+            status = 'present'
     
-    if x in USERS:
-        date = str(datetime.datetime.now().date())
-        messages.success(request, 'User is present')
+    if status == 'present':
+        #On my Contact List
+        myList = Contact(user = request.user, contact = contact)
+        #On my Friend's list
+        friendList = Contact(user = User.objects.get(username = contact), contact = request.user.username)
         
-        friend = Friend(user = request.user, friend = x, timestamp = str(date), status = 'p', mode = 's')
+        #saving entries
+        myList.save()
+        friendList.save()
         
-        oppFriend = Friend(user = opp, friend = request.user.username, timestamp = str(date), status = 'p', mode = 'r')
-        oppFriend.save()
-        friend.save()
-        return HttpResponse('success')
-    
-def chatRoom(request, username):
+        #Notifying Users
+        myNotification = Notification(user = request.user, contact = contact, body = "You have successfully added {0} to your contact list".format(contact))
+        friendNotification = Notification(user = User.objects.get(username = contact), contact = request.user.username, body = "You have been added to {0}'s contact list ".format(request.user.username))
+        
+        #save notification
+        myNotification.save()
+        friendNotification.save()
+        
+        messages.success(request, 'Contact Successfully added')
+        return redirect ('chat:chatIndex')
+    else:
+        messages.warning(request, 'Contact not yet registered')
+        return redirect('chat:chatIndex')
+
+def startChat(request):
     if request.method == 'POST':
-        me = request.POST.get('me'),
-        friend = request.POST.get('friend')
         message = request.POST.get('message')
+        sender = request.POST.get('sender')
+        receiver = request.POST.get('receiver')
         key = request.POST.get('key')
-        message = re.sub('^f_send ', '', message)
-        chat = Chat(sender = request.user.username, receiver = friend, chat = message, timestamp = timezone.now(), mode = 's', key = str(request.user.username)+str(friend))
+        
+        chat = Chat(sender = sender, receiver = receiver, key = key, message = message)
         chat.save()
-        messages.success(request, 'Chat successfully added')
-        return HttpResponse('Success')
-    
-    user = User.objects.get(email = request.user.username)
-    me = user.username
-    friend = User.objects.get(email = username)
-    Friend = friend.username
-    print (Friend)
-    key = str(me)+str(friend)
-    chat = Chat.objects.filter(key__icontains = request.user.username).filter(key__icontains = Friend).order_by('-id')
-    ctx = {
-        'me':me,
-        'Friend':Friend,
-        'chat':chat,
-    }
-    return render(request, 'chat/chatRoom.html', ctx)
-
-
-def acceptFriend(request, friend):
-    user = request.user.username
-    friendRequest = Friend.objects.filter(status__exact = 'p')
-    for item in friendRequest:
-        if item.user.username == request.user.username and item.friend == friend:
-            item.status = 'a'
-            item.save()
-        if item.user.username == friend and item.friend == request.user.username:
-            item.status = 'a'
-            item.save()
-    return redirect('chat:ChatIndex')
-    
-    
-def declineFriend(reqeust, friend):
-    user = request.user.username
-    friendRequest = Friend.objects.filter(status__exact = 'p')
-    for item in friendRequest:
-        if item.user.username == request.user.username and item.friend == friend:
-            item.delete()
-        if item.user.username == friend and item.friend == request.user.username:
-            item.delete()
-    return redirect('chat:ChatIndex')
-    
-    
+        return HttpResponse('successfuly sent message')
+        
+        
     

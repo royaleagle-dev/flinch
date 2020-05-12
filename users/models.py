@@ -10,7 +10,7 @@ import uuid
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete = models.CASCADE)
 	phone = models.CharField(max_length = 20)
-	totalCart = models.IntegerField(default = 0)
+	location = models.CharField(max_length = 255, default = 'Ijebu-Ode, Ogun State, Nigeria')
 
 	@receiver(post_save, sender = User)
 	def create_user_profile(sender, instance, created, **kwargs):

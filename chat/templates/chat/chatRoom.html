@@ -1,50 +1,23 @@
 {%extends "chat/base.html"%}
 
-{%load static%}
-
 {%block content%}
 <div class = "row">
-    <div class = "col" align = "center">
-        <h4 id = "friend">{{Friend}}</h4>
-        <h4>{{me}}</h4>
-        <hr>
-        <div class = "row">
-            <div class = "col-md-8 offset-md-2">
-                <div id = "messages">
-                
-                    {%for item in chat%}
-            
-                    {%if item.sender == request.user.username%}
-                        <div class = "w3-round-xxlarge senderStyle" align = "right" style = "">
-                            <p style = "margin-bottom:1px;">{{item.chat}}<br>
-                            <small class = "text-warning">{{item.timestamp}}</small></p>
-                    
-                        </div>
-                        <br>
-                
-            
-                    {%else%}
-                        <div class = "w3-round-xxlarge receiverStyle" align = "left" style = "">
-                            <p style = "margin-bottom:1px;">{{item.chat}}<br>
-                            <small class = "text-warning">{{item.timestamp}}</small></p>
-                        </div>
-                        <br>
-                
-                    {%endif%}
-                
-                    {%endfor%}
+    <div class = "col" id = "toBeLoaded">
+        {%for item in chats%}
+            {%if item.sender == request.user.username%}
+                <div class = "w3-card-4 w3-round-xlarge bg-primary text-light" align = "right" style = "padding:15px;">
+                    <h6>{{item.message}}</h6>
                 </div>
-            
-            
-            </div>
-        </div>
+                <hr>
+        
+            {%else%}
+        `       <div class = "w3-card-4 w3-round-xlarge" align = "left" style = "padding:15px;">
+                    <h6>{{item.message}}</h6>
+                </div>
+                <hr>
+            {%endif%}
+        {%endfor%}
+        
     </div>
 </div>
-{%endblock%}
-
-{%block otherJs%}
-<script src = "{%static 'js/chatRoom.js'%}">    
-</script>
-<script src = "{%static 'js/chatRoomLoader.js'%}">
-</script>
 {%endblock%}
