@@ -6,7 +6,7 @@
         <h5 class = "text-center">Sign-up</h5>
         <hr>
         <div class = "w3-panel w3-white w3-card-2" style = "overflow-y:auto">
-            <form class = "m-5">
+            <form class = "m-5" method = "POST" action = "{%url 'users:userSignup'%}">
                 {%csrf_token%}
                 <label class = "sr-only">Firstname</label>
                 <div class = "input-group">
@@ -15,7 +15,7 @@
                             <span class = "fas fa-pen-fancy"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "text" name = "firstname" placeholder = "Firstname">
+                    <input class = "form-control" type = "text" name = "firstname" placeholder = "Firstname" required>
                 </div>
                 <br>
                 <label class = "sr-only">Lastname</label>
@@ -25,7 +25,7 @@
                             <span class = "fas fa-pen-fancy"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "text" name = "lastname" placeholder = "Lastname">
+                    <input class = "form-control" type = "text" name = "lastname" placeholder = "Lastname" required>
                 </div>
                 <br>
                 <label class = "sr-only">Phone</label>
@@ -35,7 +35,7 @@
                             <span class = "fas fa-phone"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "text" name = "phone" placeholder = "Phone">
+                    <input class = "form-control" type = "text" name = "phone" placeholder = "Phone" required>
                 </div>
                 <br>
                 <label class = "sr-only">Recovery Code</label>
@@ -45,7 +45,7 @@
                             <span class = "fas fa-code"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "password" name = "recovery" placeholder = "Recovery Code">
+                    <input class = "form-control" type = "password" name = "recovery" placeholder = "Recovery Code" required>
                 </div>
                 <br>
                 
@@ -56,7 +56,7 @@
                             <span class = "fas fa-mail-bulk"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "text" name = "username" placeholder = "Email">
+                    <input class = "form-control" type = "email" name = "email" placeholder = "Email" required>
                 </div>
                 
                 <label class = "sr-only">Password</label>
@@ -66,7 +66,17 @@
                             <span class = "fas fa-pen"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "password" name = "password" placeholder = "Password">
+                    <input class = "form-control" type = "password" name = "password" placeholder = "Password" required>
+                </div>
+                
+                <label class = "sr-only">Address</label>
+                <div class = "input-group mt-3">
+                    <div class = "input-group-prepend">
+                        <div class = "input-group-text">
+                            <span class = "fas fa-map-pin"></span>
+                        </div>
+                    </div>
+                    <input class = "form-control" type = "text" name = "location" placeholder = "Address" required>
                 </div>
                 <hr>
                 <button class = "btn btn-dark btn-block" type = "submit">Signup</button>
@@ -87,7 +97,7 @@
                             <span class = "fas fa-mail-bulk"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "text" name = "email" placeholder = "Email">
+                    <input class = "form-control" type = "email" name = "email" placeholder = "Email" required>
                 </div>
                 
                 <label class = "sr-only">Password</label>
@@ -97,7 +107,7 @@
                             <span class = "fas fa-pen"></span>
                         </div>
                     </div>
-                    <input class = "form-control" type = "password" name = "password" placeholder = "Password">
+                    <input class = "form-control" type = "password" name = "password" placeholder = "Password" required>
                 </div>
                 <hr>
                 <button class = "btn btn-info btn-block" type = "submit">Signin</button>

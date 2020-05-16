@@ -44,19 +44,25 @@ def userSignup(request):
     if request.method == 'POST':
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
-        username = request.POST.get('username')
+        #username = request.POST.get('email')
         password = request.POST.get('password')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         recovery = request.POST.get('recovery')
+        location = request.POST.get('location')
         
         user = User.objects.create_user(username = email, password = password, email = email)
         user.save()
-        user.profile.phone = phone
-        user.profile.recovery = recovery
+        
         user.first_name = firstname
         user.last_name = lastname
         user.save()
+        
+        user.profile.phone = phone
+        user.profile.recovery = recovery
+        user.profile.location = location
+        user.save()
+        
         messages.success (request, "User successfully Created")
         return redirect ("users:userLogin")
     else:

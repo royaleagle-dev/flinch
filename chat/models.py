@@ -14,6 +14,11 @@ class Notification(models.Model):
     contact = models.EmailField(max_length = 255)
     body = models.CharField(max_length = 2000, default = '')
     timestamp = models.DateTimeField(auto_now_add = True)
+    choices = (
+        ('r', 'read'),
+        ('u', 'unread'),
+    )
+    status = models.CharField(max_length = 1, choices = choices, default = 'u')
     
     def __str__(self):
         return self.body

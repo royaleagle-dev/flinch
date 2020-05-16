@@ -32,12 +32,15 @@ def chatRoom(request, receiver):
 
 def chatIndex(request):
     
+    user = request.user
+    users = User.objects.all().order_by('-id')
     contacts = Contact.objects.filter(contact__exact = request.user.username)
-    notificationCount = Notification.objects.filter(contact__exact = request.user.username).count()
+    notificationCount = Notification.objects.filter(user__username__exact = request.user.username).filter(status__exact = 'u').count()
     notifications = Notification.objects.filter(user__username__exact = request.user.username).order_by('-id')
     
     ctx = {
-        #'chats':chats,
+        'user':user,
+        'users':users,
         'contacts':contacts,
         'notificationCount':notificationCount,
         'notifications':notifications,
@@ -86,7 +89,10 @@ def startChat(request):
         key = request.POST.get('key')
         
         chat = Chat(sender = sender, receiver = receiver, key = key, message = message)
+        notif = Notification(user = User.objects.get(email=receiver), contact = request.user.username, body = "You've just received a message from {0}".format(sender))
+        
         chat.save()
+        notif.save()
         return HttpResponse('successfuly sent message')
         
         
